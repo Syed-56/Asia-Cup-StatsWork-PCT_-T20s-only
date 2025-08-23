@@ -149,6 +149,42 @@ def makeBarChart(data, title, xlabel, ylabel, colors_map, save_path=None, line_s
     else:
         plt.show()
 
+def makeStackedBarChart(data, title, xlabel, ylabel, colors_map, save_path=None, figsize=(10, 6)):
+    """
+    Function to plot a stacked bar chart with customizable parameters.
+
+    Parameters:
+    - data: A pandas DataFrame with categories as columns and teams as index.
+    - title: Title of the chart.
+    - xlabel: Label for the x-axis.
+    - ylabel: Label for the y-axis.
+    - colors_map: Dictionary mapping categories to colors.
+    - save_path: Path to save the figure (optional).
+    - figsize: Tuple for the figure size (default is (10, 6)).
+    """
+    # Create a stacked bar chart
+    ax = data.plot(kind='bar', stacked=True, figsize=figsize, color=[colors_map.get(col, '#808080') for col in data.columns])
+
+    # Set chart title and labels
+    plt.title(title, fontsize=16)
+    plt.xlabel(xlabel, fontsize=14)
+    plt.ylabel(ylabel, fontsize=14)
+
+    # Add color legend
+    plt.legend(title="Boundary Type", loc="upper left", bbox_to_anchor=(1.05, 1))
+
+    # Add grid for better readability
+    plt.grid(True, which='minor', linestyle='--', linewidth=0.5)
+
+    # Adjust layout to prevent clipping
+    plt.tight_layout()
+
+    # Save or display the plot
+    if save_path:
+        plt.savefig(save_path, bbox_inches="tight", dpi=300)
+    else:
+        plt.show()
+
 def makeLineChart(data, title, xlabel, ylabel, colors_map, save_path=None, line_style='-', figsize=(10, 6)):
     """
     Function to plot a line chart with customizable parameters.

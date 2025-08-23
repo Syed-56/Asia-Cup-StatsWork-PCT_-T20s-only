@@ -1,5 +1,5 @@
 from data_scraping import matches
-from charts import makePieChart, makeBarChart, makeLineChart
+from charts import makePieChart, makeBarChart, makeLineChart, makeStackedBarChart
 import pandas as pd
 
 colors_map={'Pakistan':'#90ee90','Bangladesh':'#006400','Sri Lanka':'#ffa500','India':'#add8e6','Hong Kong':"#FC1D1D",'UAE':"#8B0068",'Afghanistan':'#00008B'}
@@ -39,3 +39,17 @@ makeBarChart(
     save_path="Analysis/avg_run_rate_per_team.png",
     orientation = 'horizontal'
 )
+
+boundaries = matches.groupby('Team')[['Fours', 'Sixes']].sum()
+colors_map2 = {'Fours': '#90ee90', 'Sixes': '#ffa500', 'Extras': '#add8e6'}
+
+# Call the function to create a stacked bar chart for boundaries and extras
+makeStackedBarChart(
+    data=boundaries,  # The summed data for each team
+    title="Boundaries (Fours + Sixes) by Each Team",
+    xlabel="Team",
+    ylabel="Total Boundaries (Fours + Sixes)",
+    colors_map=colors_map2,  # Color mapping for each category
+    save_path="Analysis/boundaries.png"  # Optional path to save the image
+)
+
