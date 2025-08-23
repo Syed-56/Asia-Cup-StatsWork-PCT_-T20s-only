@@ -48,7 +48,7 @@ makeBarChart(
     colors_map=colors_map,
     title="Team's Strength (Asia Cup T20s)",
     xlabel="Teams",
-    ylabel="TStrength%",
+    ylabel="Strength%",
     save_path="Analysis/Team_strength_percentage.png",
     orientation = 'horizontal'
 )
