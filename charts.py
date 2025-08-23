@@ -97,3 +97,40 @@ def makePieChart(data, labels=None, colors_map=None, title="Pie Chart", save_pat
         plt.savefig(save_path, dpi=300, bbox_inches="tight")
     else:
         plt.show()
+
+def makeBarChart(data, colors_map, title, x_label, y_label, save_path=None):
+    """
+    Generalized function to create a bar chart.
+
+    Parameters:
+    - data: The data to plot (e.g., a pandas Series or dictionary)
+    - title: Title of the chart
+    - x_label: Label for the x-axis
+    - y_label: Label for the y-axis
+    - save_path: Optional path to save the chart image
+
+    Returns:
+    - None
+    """
+    data = data.sort_values(ascending=True)
+    plt.figure(figsize=(10, 6))
+    colors = [colors_map.get(team, '#808080') for team in data.index]  # Default to gray if not found
+    bars = plt.bar(data.index, data.values, color=colors, edgecolor='none', width=0.4)
+
+    # Add percentage labels on the bars
+    for bar in bars:
+        plt.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 1,
+                 f"{bar.get_height():.1f}%", ha='center', fontsize=6, fontweight='light')
+
+    # Add titles and labels
+    plt.title(title, fontsize=14, fontweight="bold")
+    plt.ylabel(y_label)
+    plt.xlabel(x_label)
+    plt.xticks(rotation=45)
+
+    # Save the plot if save_path is provided
+    if save_path:
+        plt.savefig(save_path, dpi=300, bbox_inches="tight")
+
+    # Show the plot
+    plt.show()
