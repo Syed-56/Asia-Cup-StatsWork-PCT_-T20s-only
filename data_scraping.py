@@ -14,4 +14,4 @@ for df in [matches, champions, batsmanDataT20, bowlerDataT20, wkpDataT20]:
     df.reset_index(drop=True, inplace=True)
 
 if __name__ == "__main__":
-    print(matches.head())
+    print(batsmanDataT20.columns)
