@@ -1,7 +1,7 @@
 # pie_chart.py
 import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib import patheffects as path_effects
+import pandas as pd
 
 def makePieChart(data, labels=None, colors_map=None, title="Pie Chart", save_path=None, 
                  number_type="count", figsize=(7,7), text_color="white"):
@@ -70,7 +70,6 @@ def makePieChart(data, labels=None, colors_map=None, title="Pie Chart", save_pat
     # White text with black border
     for autotext in autotexts:
         autotext.set_color(text_color)
-        autotext.set_path_effects([path_effects.withStroke(linewidth=2, foreground="black")])
 
     # Arrows for labels
     label_radius = 1.2
@@ -98,39 +97,102 @@ def makePieChart(data, labels=None, colors_map=None, title="Pie Chart", save_pat
     else:
         plt.show()
 
-def makeBarChart(data, colors_map, title, x_label, y_label, save_path=None):
+def makeBarChart(data, title, xlabel, ylabel, colors_map, save_path=None, line_style='-', figsize=(10, 6), orientation='vertical'):
     """
-    Generalized function to create a bar chart.
+    Function to plot a bar chart with customizable parameters, supporting both vertical and horizontal bar charts.
 
     Parameters:
-    - data: The data to plot (e.g., a pandas Series or dictionary)
-    - title: Title of the chart
-    - x_label: Label for the x-axis
-    - y_label: Label for the y-axis
-    - save_path: Optional path to save the chart image
-
-    Returns:
-    - None
+    - data: A pandas DataFrame or Series with x and y values.
+    - title: Title of the chart.
+    - xlabel: Label for the x-axis.
+    - ylabel: Label for the y-axis.
+    - colors_map: Dictionary mapping categories to colors.
+    - save_path: Path to save the figure (optional).
+    - line_style: Style of the line (default is solid line '-').
+    - figsize: Tuple for the figure size (default is (10, 6)).
+    - orientation: 'vertical' or 'horizontal' to control bar chart orientation.
     """
-    data = data.sort_values(ascending=True)
-    plt.figure(figsize=(10, 6))
-    colors = [colors_map.get(team, '#808080') for team in data.index]  # Default to gray if not found
-    bars = plt.bar(data.index, data.values, color=colors, edgecolor='none', width=0.4)
+    plt.figure(figsize=figsize)
 
-    # Add percentage labels on the bars
-    for bar in bars:
-        plt.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 1,
-                 f"{bar.get_height():.1f}%", ha='center', fontsize=6, fontweight='light')
+    if orientation == 'vertical':
+        # Plot vertical bars
+        bars = plt.bar(data.index, data, color=[colors_map.get(team, '#808080') for team in data.index])
+        
+        # Add values above each bar
+        for bar in bars:
+            height = bar.get_height()
+            plt.text(bar.get_x() + bar.get_width() / 2, height + 0.1, 
+                     f'{height:.2f}', ha='center', va='bottom', fontsize=9)
+        
+        plt.xlabel(xlabel, fontsize=14)
+        plt.ylabel(ylabel, fontsize=14)
 
-    # Add titles and labels
-    plt.title(title, fontsize=14, fontweight="bold")
-    plt.ylabel(y_label)
-    plt.xlabel(x_label)
-    plt.xticks(rotation=45)
+    elif orientation == 'horizontal':
+        # Plot horizontal bars
+        bars = plt.barh(data.index, data, color=[colors_map.get(team, '#808080') for team in data.index])
 
-    # Save the plot if save_path is provided
+        # Add values beside each bar
+        for bar in bars:
+            width = bar.get_width()
+            plt.text(width + 0.1, bar.get_y() + bar.get_height() / 2, 
+                     f'{width:.2f}', va='center', fontsize=9)
+        
+        plt.ylabel(xlabel, fontsize=14)
+        plt.xlabel(ylabel, fontsize=14)
+
+    plt.title(title, fontsize=16, pad=20)
+
+    # Adjust layout to avoid clipping
+    plt.tight_layout()
     if save_path:
-        plt.savefig(save_path, dpi=300, bbox_inches="tight")
+        plt.savefig(save_path, bbox_inches="tight", dpi=300)
+    else:
+        plt.show()
 
-    # Show the plot
-    plt.show()
+def makeLineChart(data, title, xlabel, ylabel, colors_map, save_path=None, line_style='-', figsize=(10, 6)):
+    """
+    Function to plot a line chart with customizable parameters.
+
+    Parameters:
+    - data: A pandas DataFrame or Series with x and y values.
+    - title: Title of the chart.
+    - xlabel: Label for the x-axis.
+    - ylabel: Label for the y-axis.
+    - colors_map: Dictionary mapping categories to colors.
+    - save_path: Path to save the figure (optional).
+    - line_style: Style of the line (default is solid line '-').
+    - figsize: Tuple for the figure size (default is (10, 6)).
+    """
+    plt.figure(figsize=figsize)
+
+    # Ensure data is a Series if it's a DataFrame
+    if isinstance(data, pd.DataFrame):
+        data = data.squeeze()  # Convert DataFrame to Series
+
+    # Plot each team's line
+    for team, color in colors_map.items():
+        if team in data.index:  # Check if team exists in the index of the data
+            plt.plot(data.index, data[team], label=team, color=color, linestyle=line_style, linewidth=2)
+
+    # Set chart title and labels
+    plt.title(title, fontsize=16, pad=20)
+    plt.xlabel(xlabel, fontsize=14)
+    plt.ylabel(ylabel, fontsize=14)
+
+    # Adjust legend position (add more space on the right)
+    plt.legend(
+        title="Teams", 
+        loc="upper left", 
+        bbox_to_anchor=(0.8, 1),  # Add more space to the right of the plot
+        borderaxespad=0.2,         # Adds some padding between the legend and the plot
+        handlelength=1.5, 
+        handleheight=1.5
+    )
+
+    plt.grid(True, which='both', linestyle='--', linewidth=0.5)
+
+    # Save or display the plot
+    if save_path:
+        plt.savefig(save_path, bbox_inches="tight", dpi=300)
+    else:
+        plt.show()
