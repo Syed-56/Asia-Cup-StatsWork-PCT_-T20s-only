@@ -1,6 +1,5 @@
 from data_scraping import matches
 from charts import makePieChart, makeBarChart, makeLineChart, makeStackedBarChart
-import pandas as pd
 
 colors_map={'Pakistan':'#90ee90','Bangladesh':'#006400','Sri Lanka':'#ffa500','India':'#add8e6','Hong Kong':"#FC1D1D",'UAE':"#8B0068",'Afghanistan':'#00008B'}
 
@@ -25,11 +24,12 @@ makeBarChart(
     title="Toss Win Percentage by Team (Asia Cup T20s)",
     xlabel="Teams",
     ylabel="Toss Win %",
-    save_path="Analysis/toss_win_percentage.png"
+    save_path="Analysis/toss_win_percentage.png",
+    orientation = 'vertical'
+
 )
 
 avgTeamRR = matches.groupby('Team')['Run Rate'].mean().sort_values(ascending=False)
-
 makeBarChart(
     data=avgTeamRR,
     colors_map=colors_map,
@@ -38,6 +38,19 @@ makeBarChart(
     ylabel="Average Run Rate",
     save_path="Analysis/avg_run_rate_per_team.png",
     orientation = 'horizontal'
+)
+
+matches['Overs Faced by Opponent'] = matches['Run Scored'] / matches['Run Rate']
+matches['Economy Rate'] = matches['Run Scored'] / matches['Overs Faced by Opponent']
+avg_team_eco = matches.groupby('Opponent')['Economy Rate'].mean().sort_values(ascending=True)
+makeBarChart(
+    data=avg_team_eco,
+    colors_map=colors_map,
+    title="Average Economy Rate per Team in T20 Asia Cup",
+    xlabel="Team",
+    ylabel="Average Economy Rate",
+    save_path="Analysis/avg_econ_rate.png",
+    orientation = 'vertical'
 )
 
 boundaries = matches.groupby('Team')[['Fours', 'Sixes']].sum()
@@ -53,3 +66,13 @@ makeStackedBarChart(
     save_path="Analysis/boundaries.png"  # Optional path to save the image
 )
 
+avgWickets = matches.groupby('Team')['Wicket Taken'].sum().astype(int)
+makeBarChart(
+    data=avgWickets,
+    colors_map=colors_map,
+    title="Wickets per Team in T20 Asia Cup",
+    xlabel="Team",
+    ylabel="Wickets",   
+    #save_path="Analysis/wickets_per_team.png",
+    orientation = 'vertical'
+)
