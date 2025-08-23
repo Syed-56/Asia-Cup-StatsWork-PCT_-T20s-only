@@ -1,5 +1,6 @@
 import pandas as pd
-from TeamsAnalysis import winCounts, avgTeamRR, avg_team_eco, boundaries, avgWickets
+from TeamsAnalysis import winCounts, avgTeamRR, avg_team_eco, boundaries, avgWickets, colors_map
+from charts import makeBarChart
 
 boundaries['Boundaries'] = boundaries['Fours'] + boundaries['Sixes']
 boundaries = boundaries['Boundaries']
@@ -42,3 +43,12 @@ team_stats_scaled[strength] = pd.to_numeric(team_stats_scaled[strength], errors=
 team_stats_scaled[strength] = team_stats_scaled[strength].apply(lambda x: x + 5.5 if x < 50 else x)
 
 print(team_stats_scaled[['Overall Strength']])
+makeBarChart(
+    data=team_stats_scaled['Overall Strength'],
+    colors_map=colors_map,
+    title="Team's Strength (Asia Cup T20s)",
+    xlabel="Teams",
+    ylabel="TStrength%",
+    save_path="Analysis/Team_strength_percentage.png",
+    orientation = 'horizontal'
+)

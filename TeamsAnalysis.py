@@ -13,8 +13,6 @@ makePieChart(
     number_type="count"
 )
 
-
-
 totalMatches = matches['Team'].value_counts()
 tossWins = matches[matches['Toss']=='Win']['Team'].value_counts()
 tossWinPercent = (tossWins/totalMatches)*100
@@ -26,7 +24,6 @@ makeBarChart(
     ylabel="Toss Win %",
     save_path="Analysis/toss_win_percentage.png",
     orientation = 'vertical'
-
 )
 
 avgTeamRR = matches.groupby('Team')['Run Rate'].mean().sort_values(ascending=False)
