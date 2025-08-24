@@ -1,5 +1,5 @@
 from data_scraping import matches
-from charts import makePieChart, makeBarChart, makeLineChart, makeStackedBarChart
+from charts import makePieChart, makeBarChart, makeStackedBarChart
 
 colors_map={'Pakistan':'#90ee90','Bangladesh':'#006400','Sri Lanka':'#ffa500','India':'#add8e6','Hong Kong':"#FC1D1D",'UAE':"#8B0068",'Afghanistan':'#00008B'}
 
