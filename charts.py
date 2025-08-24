@@ -1,9 +1,10 @@
 # pie_chart.py
 import numpy as np
 import matplotlib.pyplot as plt
+from adjustText import adjust_text
 import pandas as pd
 
-def makePieChart(data, labels=None, colors_map=None, title="Pie Chart", save_path=None, 
+def makePieChart(data, labels=None, colors_map=None, colors=None, title="Pie Chart", save_path=None, 
                  number_type="count", figsize=(7,7), text_color="white"):
     """
     General Pie Chart maker with arrows pointing to labels.
@@ -40,8 +41,10 @@ def makePieChart(data, labels=None, colors_map=None, title="Pie Chart", save_pat
     # Assign colors
     if colors_map:
         colors = [colors_map.get(lbl, "#808080") for lbl in labels]
+        if colors is None and colors_map:
+            colors = [colors_map.get(lbl, "#808080") for lbl in labels]
     else:
-        colors = None  # matplotlib default
+        colors=None
 
     # Define number format
     def format_autopct(pct):
@@ -228,6 +231,91 @@ def makeLineChart(data, title, xlabel, ylabel, colors_map, save_path=None, line_
     plt.grid(True, which='both', linestyle='--', linewidth=0.5)
 
     # Save or display the plot
+    if save_path:
+        plt.savefig(save_path, bbox_inches="tight", dpi=300)
+    else:
+        plt.show()
+
+def makeScatterPlot(
+    data, 
+    x_col, 
+    y_col, 
+    label_col=None, 
+    color_col=None, 
+    colors_map=None,
+    title="Scatterplot", 
+    xlabel=None, 
+    ylabel=None, 
+    figsize=(10,6), 
+    point_size=80,
+    annotate_top_n=0,
+    save_path=None
+):
+    """
+    General Scatter Plot maker.
+
+    Parameters:
+    -----------
+    data : DataFrame
+        Pandas DataFrame with data.
+    x_col : str
+        Column for X-axis.
+    y_col : str
+        Column for Y-axis.
+    label_col : str (optional)
+        Column to use for annotating points (e.g., player names).
+    color_col : str (optional)
+        Column to determine point colors (e.g., country).
+    colors_map : dict (optional)
+        Mapping of category -> color.
+    title : str
+        Title of the chart.
+    xlabel, ylabel : str
+        Custom axis labels (default = column names).
+    figsize : tuple
+        Size of figure.
+    point_size : int
+        Size of scatter points.
+    annotate_top_n : int
+        If > 0, annotate top N by y_col.
+    """
+
+    plt.figure(figsize=figsize)
+
+    # Assign colors
+    if color_col and colors_map:
+        colors = data[color_col].map(lambda c: colors_map.get(c, "#808080"))
+    else:
+        colors = "blue"
+
+
+    # Annotations (rank by combined score = x_col * y_col)
+    if label_col:
+
+        ann = data.copy()
+        ann["_x"] = pd.to_numeric(ann[x_col], errors="coerce")
+        ann["_y"] = pd.to_numeric(ann[y_col], errors="coerce")
+        ann["_score"] = ann["_x"] * ann["_y"]
+        ann = ann.dropna(subset=["_x", "_y", "_score"])
+
+        # choose which rows to annotate
+        if annotate_top_n and annotate_top_n > 0:
+            ann = ann.nlargest(annotate_top_n, "_score")
+        plt.scatter(ann[x_col], ann[y_col], alpha=0.7)
+
+        texts = []
+        for _, row in ann.iterrows():
+            texts.append(
+                plt.text(row["_x"], row["_y"], str(row[label_col]), fontsize=9)
+            )
+
+        adjust_text(texts, arrowprops=dict(arrowstyle="->", color="gray", lw=0.5))
+
+    # Labels & title
+    plt.xlabel(xlabel if xlabel else x_col)
+    plt.ylabel(ylabel if ylabel else y_col)
+    plt.title(title)
+    plt.grid(True)
     if save_path:
         plt.savefig(save_path, bbox_inches="tight", dpi=300)
     else:
