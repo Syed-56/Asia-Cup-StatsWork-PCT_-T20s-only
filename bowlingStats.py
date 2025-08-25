@@ -11,7 +11,7 @@ makePieChart(
     labels=mostWickets['Player Name'],   
     colors=colors,
     title="Most Wickets in T20 Asia Cup",
-    # save_path="Analysis/most_wickes.png",
+    save_path="Analysis/most_wickets.png",
     number_type="count"
 )
 
@@ -19,12 +19,12 @@ makePieChart(
 mostWickets = bowlerDataT20[['Player Name', 'Bowling Average', 'Country']].sort_values(by='Bowling Average', ascending=True).head(5)
 colors = [colors_map.get(country, "#808080") for country in mostWickets['Country']]
 makeBarChart(
-    data=mostWickets['Bowling Average'],
-    colors_map=colors_map,
-    title="Best Bowl Avg in T20 Asia Cup",
-    xlabel="Average",
-    ylabel="Player",  
-    # save_path="Analysis/most_wickes.png",
+    data = mostWickets.set_index('Player Name')['Bowling Average'],
+    colors_map = colors_map,
+    title = "Best Bowl Avg in T20 Asia Cup",
+    xlabel = "Player",
+    ylabel = "Bowling Average",  
+    save_path="Analysis/best_Avg.png",
 )
 
 # Economy vs wickets
@@ -43,5 +43,5 @@ makeScatterPlot(
     colors_map=colors_map,
     title="Economy vs Wickets (T20 Asia Cup)",
     annotate_top_n=10,
-    # save_path="Analysis/most_eco_wkt.png",
+    save_path="Analysis/most_eco_wkt.png",
 )
